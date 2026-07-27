@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Memory Card Game: Pronoun Match</title>
+  <meta name="description" content="Interactive English A1 memory game about personal, possessive, and object pronouns.">
+  <style>
+    :root{--ink:#17233d;--paper:#fffdf8;--cream:#f3ede1;--blue:#447ce7;--green:#3da777;--orange:#ef8b42;--purple:#8969d4;--line:#dcd3c5}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+    button{font:inherit}.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 4vw;background:rgba(255,253,248,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
+    .brand{display:flex;align-items:center;gap:10px;border:0;background:none;font-weight:800;color:var(--ink);cursor:pointer}.logo{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--ink);color:white;font-family:Georgia,serif}
+    nav{display:flex;gap:5px;overflow:auto}nav button{border:0;border-radius:999px;padding:9px 12px;background:transparent;color:#606879;font-size:13px;cursor:pointer;white-space:nowrap}nav button:hover,nav button.active{background:var(--ink);color:#fff}
+    .page{display:none;width:min(1180px,calc(100% - 32px));min-height:calc(100vh - 118px);margin:22px auto;padding:clamp(28px,5vw,68px);border:1px solid var(--line);border-radius:28px;background:var(--paper);box-shadow:0 22px 60px rgba(65,48,30,.08)}.page.active{display:block}
+    .eyebrow{margin:0 0 10px;color:#707887;font-size:12px;font-weight:900;letter-spacing:.16em}.title{max-width:900px;margin:0 0 38px;font:500 clamp(38px,5vw,66px)/1.02 Georgia,serif;letter-spacing:-.035em}
+    .cover{position:relative;overflow:hidden;display:none;grid-template-columns:1.05fr .95fr;grid-template-rows:1fr auto;background:radial-gradient(circle at 82% 18%,rgba(68,124,231,.18),transparent 30%),radial-gradient(circle at 68% 78%,rgba(239,139,66,.16),transparent 28%),var(--paper)}.cover.active{display:grid}
+    .cover-copy{align-self:center}.cover h1{margin:0;font:500 clamp(68px,9vw,124px)/.8 Georgia,serif;letter-spacing:-.065em}.cover h1 em{color:var(--blue);font-weight:500}.lead{max-width:500px;color:#5d6575;font-size:20px;line-height:1.5}
+    .primary,.secondary{border:0;border-radius:999px;padding:14px 22px;font-weight:800;cursor:pointer}.primary{background:var(--ink);color:#fff}.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    .art{position:relative;min-height:440px}.sample{position:absolute;display:flex;flex-direction:column;justify-content:flex-end;width:175px;height:235px;padding:22px;border:8px solid #fff;border-radius:25px;color:#fff;font:46px Georgia,serif;box-shadow:0 25px 50px rgba(23,35,61,.2)}.sample small{margin-top:8px;font:800 11px Arial;letter-spacing:.12em}.sample.one{right:32%;top:4%;background:var(--blue);transform:rotate(-9deg)}.sample.two{right:4%;top:18%;background:var(--orange);transform:rotate(9deg)}.sample.three{right:25%;bottom:0;background:var(--green);transform:rotate(3deg)}
+    .student{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:7px 25px;padding-top:22px;border-top:1px solid var(--line);color:#606879;font-size:13px}.student p{margin:0}
+    .columns{display:grid;grid-template-columns:1fr 1fr;gap:42px}.panel{padding-top:24px;border-top:5px solid var(--blue)}.panel.orange{border-color:var(--orange)}.panel h3{margin:0 0 15px;font:500 30px Georgia,serif}.panel p,.panel li{color:#545e70;line-height:1.58}.panel p{font-size:18px}
+    .types{display:grid;gap:10px}.type{display:grid;grid-template-columns:1fr 1.4fr 1fr;align-items:center;gap:24px;padding:24px 20px;border-top:1px solid var(--line);border-left:8px solid}.type.personal{border-left-color:var(--blue)}.type.possessive{border-left-color:var(--green)}.type.object{border-left-color:var(--orange)}.type h3{margin:0;font:500 27px Georgia,serif}.type p{color:#566073;line-height:1.5}.type strong{text-align:right}
+    .rules ol{padding-left:23px}.rules li{padding:6px}.wildnote{margin-top:25px;padding:18px;border-radius:15px;background:#eee8fa;color:#5e478d;text-align:center}
+    #game{padding:34px}.game-head{display:flex;justify-content:space-between;align-items:end;gap:20px}.game-head h2{margin:0;font:500 clamp(35px,4vw,55px) Georgia,serif}.score{display:grid;grid-template-columns:150px 1fr 150px auto;align-items:center;gap:10px;margin:22px 0}.player{padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:#fff}.player b{float:right}.player.turn{background:var(--ink);color:#fff}.message{text-align:center;font-weight:800;color:#606879}.moves{font-size:13px;color:#717988}
+    .board{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;perspective:1000px}.card{aspect-ratio:1/1.2;border:0;padding:0;background:none;cursor:pointer;perspective:800px}.inner{position:relative;display:block;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}.card.flipped .inner,.card.matched .inner{transform:rotateY(180deg)}.card.matched{opacity:.5}.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;border-radius:16px;backface-visibility:hidden;box-shadow:0 8px 18px rgba(23,35,61,.1)}.back{background:repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 8px,transparent 8px 16px),var(--ink);color:#fff;border:4px solid #fff}.back b{display:grid;place-items:center;width:52px;height:52px;border:2px solid #fff;border-radius:50%;font:24px Georgia,serif}.back small{position:absolute;right:10px;bottom:8px;opacity:.7}.front{transform:rotateY(180deg);color:#fff;text-align:center}.front.personal{background:var(--blue)}.front.possessive{background:var(--green)}.front.object{background:var(--orange)}.front.wild{background:var(--purple)}.front i{font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.85}.front b{margin-top:8px;font-size:clamp(11px,1.15vw,17px);line-height:1.2}.front small{margin-top:7px;font-size:9px}.legend{text-align:center;color:#717988;font-size:13px}
+    .examples{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.example{padding:24px;background:#f5f1e9;border-top:8px solid}.example.personal{border-color:var(--blue)}.example.possessive{border-color:var(--green)}.example.object{border-color:var(--orange)}.example h3{font:500 25px Georgia,serif}.example p{color:#596274;line-height:1.5}
+    .reflection{columns:2;column-gap:45px;color:#535d70;line-height:1.6}.conclusion{margin-top:25px;padding:19px;border-radius:15px;background:#e8f2ff}.references p{padding:14px 0 14px 32px;margin:0;border-top:1px solid var(--line);text-indent:-32px;line-height:1.5}
+    footer{display:flex;justify-content:space-between;width:min(1180px,calc(100% - 32px));margin:0 auto 22px;color:#757d8b;font-size:12px}
+    @media(max-width:900px){.topbar{align-items:flex-start;flex-direction:column}.cover.active{display:block}.art{min-height:360px}.student{grid-template-columns:1fr}.columns,.examples{grid-template-columns:1fr}.type{grid-template-columns:1fr}.type strong{text-align:left}.board{grid-template-columns:repeat(4,1fr)}.score{grid-template-columns:1fr 1fr}.message{grid-column:1/-1;grid-row:1}.reflection{columns:1}}
+    @media(max-width:560px){.page{width:calc(100% - 16px);padding:25px 18px}.cover h1{font-size:70px}.sample{width:120px;height:165px;font-size:30px;padding:15px}.art{min-height:285px}.board{grid-template-columns:repeat(3,1fr);gap:8px}#game{padding:20px 10px}.game-head{align-items:flex-start;flex-direction:column}.front b{font-size:10px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" data-go="cover"><span class="logo">PM</span>Pronoun Match</button>
+    <nav aria-label="Presentation sections">
+      <button data-go="cover" class="active">Home</button><button data-go="objective">Objective</button><button data-go="types">Pronouns</button><button data-go="rules">Rules</button><button data-go="game">Play</button><button data-go="examples">Examples</button><button data-go="questions">Questions</button><button data-go="reflection">Reflection</button><button data-go="sources">Sources</button>
+    </nav>
+  </header>
+
+  <section id="cover" class="page cover active">
+    <div class="cover-copy"><p class="eyebrow">MEMORY CARD GAME · ENGLISH A1</p><h1>Pronoun<br><em>Match</em></h1><p class="lead">Learn personal, possessive, and object pronouns with a fun memory game.</p><button class="primary" data-go="game">Start the game →</button></div>
+    <div class="art"><div class="sample one">She<small>PERSONAL</small></div><div class="sample two">him<small>OBJECT</small></div><div class="sample three">ours<small>POSSESSIVE</small></div></div>
+    <div class="student"><p><b>Student:</b> Wilfer Daney Bueno Andica</p><p><b>Institution:</b> ____________________</p><p><b>Course:</b> ____________________</p><p><b>Teacher:</b> ____________________</p><p><b>City:</b> Medellín, Antioquia</p><p><b>Date:</b> ____________________</p></div>
+  </section>
+
+  <section id="objective" class="page"><p class="eyebrow">01 · PURPOSE</p><h2 class="title">Grammar becomes easier in real situations</h2><div class="columns"><article class="panel"><h3>Objective</h3><p>To practice personal, possessive, and object pronouns with short sentences from school, home, family, and friends.</p></article><article class="panel orange"><h3>Objetivo</h3><p>Practicar los pronombres personales, posesivos y de objeto con oraciones cortas sobre la escuela, la casa, la familia y los amigos.</p></article></div></section>
+
+  <section id="types" class="page"><p class="eyebrow">02 · QUICK GUIDE</p><h2 class="title">Three types, three simple jobs</h2><div class="types">
+    <article class="type personal"><h3>Personal pronouns</h3><p>They replace the person who does the action.<br><b>She</b> is my sister. · <b>We</b> study.</p><strong>I · you · he · she · we · they</strong></article>
+    <article class="type possessive"><h3>Possessives</h3><p>They show who owns something.<br>This is <b>my</b> bag. · The pencil is <b>hers</b>.</p><strong>my · your · his · hers · ours</strong></article>
+    <article class="type object"><h3>Object pronouns</h3><p>They receive the action.<br>Help <b>me</b>. · I call <b>him</b>.</p><strong>me · him · her · us · them</strong></article>
+  </div></section>
+
+  <section id="rules" class="page rules"><p class="eyebrow">03 · HOW TO PLAY</p><h2 class="title">Find the sentence and its correct pronoun</h2><div class="columns">
+    <article class="panel"><h3>English</h3><ol><li>Put all the cards face down.</li><li>Flip two cards per turn.</li><li>Match a sentence with the correct pronoun.</li><li>If they match, keep the pair.</li><li>If not, the cards flip back.</li><li>Follow the wildcards.</li><li>The player with the most pairs wins.</li></ol></article>
+    <article class="panel orange"><h3>Español</h3><ol><li>Coloca las tarjetas boca abajo.</li><li>Voltea dos tarjetas por turno.</li><li>Une una oración con el pronombre correcto.</li><li>Si coinciden, conserva la pareja.</li><li>Si no, las tarjetas se voltean.</li><li>Sigue las instrucciones de los comodines.</li><li>Gana quien tenga más parejas.</li></ol></article>
+  </div><div class="wildnote"><b>⭐ Extra Turn</b> = play again &nbsp; · &nbsp; <b>↩ Lose a Pair</b> = return one pair</div></section>
+
+  <section id="game" class="page"><div class="game-head"><div><p class="eyebrow">04 · INTERACTIVE BOARD</p><h2>Flip two cards. Find the match.</h2></div><button id="restart" class="secondary">Restart game</button></div>
+    <div class="score"><div id="p1" class="player turn">Player 1 <b>0</b></div><div id="message" class="message">Choose two cards. Good luck!</div><div id="p2" class="player">Player 2 <b>0</b></div><div id="moves" class="moves">Moves: 0</div></div>
+    <div id="board" class="board"></div><p class="legend">Blue = personal · Green = possessive · Orange = object · Purple = wildcard</p>
+  </section>
+
+  <section id="examples" class="page"><p class="eyebrow">05 · EXAMPLES</p><h2 class="title">See how each pronoun works</h2><div class="examples">
+    <article class="example personal"><h3>Laura is my sister. <b>She</b> is kind.</h3><p><b>EN:</b> “She” replaces the name Laura.<br><b>ES:</b> “She” reemplaza el nombre Laura.</p></article>
+    <article class="example possessive"><h3>This is <b>her</b> bag.</h3><p><b>EN:</b> “Her” shows who owns the bag.<br><b>ES:</b> “Her” indica quién es la dueña del bolso.</p></article>
+    <article class="example object"><h3>I like <b>him</b>.</h3><p><b>EN:</b> “Him” receives the action.<br><b>ES:</b> “Him” recibe la acción.</p></article>
+    <article class="example possessive"><h3>That book is <b>mine</b>.</h3><p><b>EN:</b> “Mine” replaces the object and shows possession.<br><b>ES:</b> “Mine” reemplaza el objeto y expresa posesión.</p></article>
+  </div></section>
+
+  <section id="questions" class="page"><p class="eyebrow">06 · GUIDING QUESTIONS</p><h2 class="title">Pronouns make daily messages clear</h2><div class="columns">
+    <article class="panel"><h3>Why is it important to use pronouns correctly?</h3><p><b>EN:</b> Pronouns help me speak clearly and avoid repeating names. They make my ideas shorter and easier to understand.</p><p><b>ES:</b> Los pronombres me ayudan a hablar con claridad y a evitar repetir nombres.</p></article>
+    <article class="panel orange"><h3>How does the game make grammar fun?</h3><p><b>EN:</b> The game helps me read, remember, and choose the correct pronoun. Colors and daily examples make grammar more fun.</p><p><b>ES:</b> El juego me ayuda a leer, recordar y elegir el pronombre correcto.</p></article>
+  </div></section>
+
+  <section id="reflection" class="page"><p class="eyebrow">07 · METACOGNITION</p><h2 class="title">What I learned while creating and playing</h2><div class="reflection">
+    <p>Creating and playing this memory game helped me understand pronouns in a simple and fun way. The sentences are about school, home, family, and friends, so I can connect grammar with my daily life.</p>
+    <p>Personal pronouns were easier for me because I often use I, he, she, and we. Object pronouns were a little more difficult because I sometimes confuse he with him or we with us.</p>
+    <p>The colors helped me identify each type of pronoun. Blue was for personal pronouns, green for possessives, and orange for object pronouns. I also used repetition and short examples to avoid mistakes.</p>
+    <p>Pronouns are useful when I introduce myself, talk about my family and friends, or describe my things. The cards, colors, and wildcards made the activity more creative. The game showed me that grammar can be practical and enjoyable.</p>
+    <p><b>Traducción:</b> Crear y jugar este juego de memoria me ayudó a comprender los pronombres de una manera sencilla y divertida. Los ejemplos cotidianos y los colores facilitaron mi aprendizaje. Los pronombres de objeto fueron un poco más difíciles, pero la repetición me ayudó a evitar errores.</p>
+  </div><div class="conclusion"><b>Conclusion / Conclusión:</b> This game helped me practice pronouns with real situations in a fun way. / Este juego me ayudó a practicar los pronombres con situaciones reales de una forma divertida.</div></section>
+
+  <section id="sources" class="page"><p class="eyebrow">08 · REFERENCES</p><h2 class="title">Sources used for the activity</h2><div class="references">
+    <p>Escobar-Álvarez, M. Á. (Coord.). (2020). <i>Curso de inglés para adultos</i> (pp. 24–30). UNED – Universidad Nacional de Educación a Distancia.</p>
+    <p>Santiesteban-Naranjo, E. (2024). <i>Sharpening up your Vocabulary: A Practical Guide for English as a Foreign Language Learner</i> (pp. 5–12). Editorial Tecnocientífica Americana.</p>
+    <p>Muñoz-Ortiz, F. (2020). <i>Inglés A1</i> (pp. 136–146). Editorial Tutor Formación.</p>
+    <p>British Council. (n.d.). <i>Personal pronouns and possessives</i>. LearnEnglish Teens.</p>
+  </div><p style="margin-top:35px"><button class="primary" data-go="game">Play again →</button></p></section>
+
+  <footer><span>Memory Card Game · Pronoun Match</span><span>Wilfer Daney Bueno Andica</span></footer>
+
+  <script>
+    const cards=[
+      {u:"s1",p:1,k:"sentence",t:"Laura is my sister. ___ is very kind.",c:"personal"},
+      {u:"a7",p:7,k:"answer",t:"me",c:"object"},
+      {u:"s5",p:5,k:"sentence",t:"The red pencil belongs to Ana. It is ___.",c:"possessive"},
+      {u:"a2",p:2,k:"answer",t:"He",c:"personal"},
+      {u:"s9",p:9,k:"sentence",t:"The teacher helps Sara and me. She helps ___.",c:"object"},
+      {u:"w1",k:"wild",t:"Extra Turn",sub:"You can play one more time.",w:"extra"},
+      {u:"a4",p:4,k:"answer",t:"my",c:"possessive"},
+      {u:"s3",p:3,k:"sentence",t:"My friends and I study together. ___ are a team.",c:"personal"},
+      {u:"a10",p:10,k:"answer",t:"them",c:"object"},
+      {u:"s7",p:7,k:"sentence",t:"Can you help ___ with my homework?",c:"object"},
+      {u:"a1",p:1,k:"answer",t:"She",c:"personal"},
+      {u:"s2",p:2,k:"sentence",t:"Daniel is my father. ___ cooks at home.",c:"personal"},
+      {u:"a8",p:8,k:"answer",t:"him",c:"object"},
+      {u:"s6",p:6,k:"sentence",t:"This project belongs to our group. It is ___.",c:"possessive"},
+      {u:"a3",p:3,k:"answer",t:"We",c:"personal"},
+      {u:"s10",p:10,k:"sentence",t:"My parents are at home. I visit ___.",c:"object"},
+      {u:"w2",k:"wild",t:"Lose a Pair",sub:"Return one of your pairs.",w:"lose"},
+      {u:"a5",p:5,k:"answer",t:"hers",c:"possessive"},
+      {u:"s4",p:4,k:"sentence",t:"I carry ___ backpack to school.",c:"possessive"},
+      {u:"a9",p:9,k:"answer",t:"us",c:"object"},
+      {u:"s8",p:8,k:"sentence",t:"Pedro is my friend. I call ___ after school.",c:"object"},
+      {u:"a6",p:6,k:"answer",t:"ours",c:"possessive"}
+    ];
+    let flipped=[],matched=[],used=[],scores=[0,0],player=0,moves=0,locked=false;
+    const board=document.querySelector("#board"),message=document.querySelector("#message");
+    function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===id));document.querySelectorAll("nav [data-go]").forEach(x=>x.classList.toggle("active",x.dataset.go===id));window.scrollTo({top:0,behavior:"smooth"})}
+    document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.go)));
+    function render(){
+      board.innerHTML=cards.map((c,i)=>`<button class="card ${flipped.includes(c.u)||used.includes(c.u)?"flipped":""} ${c.p&&matched.includes(c.p)?"matched":""}" data-card="${c.u}" aria-label="Card ${i+1}"><span class="inner"><span class="face back"><b>PM</b><small>${i+1}</small></span><span class="face front ${c.c||"wild"}"><i>${c.k==="sentence"?"Complete:":c.k==="answer"?"Pronoun:":"Wildcard"}</i><b>${c.t}</b>${c.sub?`<small>${c.sub}</small>`:""}</span></span></button>`).join("");
+      board.querySelectorAll("[data-card]").forEach(b=>b.addEventListener("click",()=>choose(cards.find(c=>c.u===b.dataset.card))));
+      document.querySelector("#p1").className="player "+(player===0?"turn":"");document.querySelector("#p2").className="player "+(player===1?"turn":"");
+      document.querySelector("#p1 b").textContent=scores[0];document.querySelector("#p2 b").textContent=scores[1];document.querySelector("#moves").textContent="Moves: "+moves;
+      if(matched.length===10)message.textContent=scores[0]===scores[1]?"🏆 It is a tie!":`🏆 Player ${scores[0]>scores[1]?1:2} wins!`;
+    }
+    function switchPlayer(){player=player?0:1}
+    function choose(c){
+      if(locked||flipped.includes(c.u)||used.includes(c.u)||(c.p&&matched.includes(c.p)))return;
+      if(c.k==="wild"){wildcard(c);return}
+      flipped.push(c.u);message.textContent=flipped.length===1?"Now choose one more card.":"Checking...";render();
+      if(flipped.length<2)return;
+      locked=true;moves++;const first=cards.find(x=>x.u===flipped[0]),ok=first.p===c.p&&first.k!==c.k;
+      if(ok){matched.push(c.p);scores[player]++;message.textContent="✓ Match! Great job!";render();setTimeout(()=>{flipped=[];locked=false;render()},900)}
+      else{message.textContent="Try again!";render();setTimeout(()=>{flipped=[];switchPlayer();locked=false;render()},1300)}
+    }
+    function wildcard(c){
+      used.push(c.u);flipped=[c.u];locked=true;
+      if(c.w==="extra"){message.textContent="⭐ Extra Turn! Play one more time.";render();setTimeout(()=>{flipped=[];locked=false;render()},1200);return}
+      if(matched.length){const returned=matched.pop();scores[player]=Math.max(0,scores[player]-1);message.textContent="↩ Lose a Pair! One pair returns to the board."}
+      else message.textContent="↩ Lose a Pair! You have no pair to return.";
+      render();setTimeout(()=>{flipped=[];switchPlayer();locked=false;render()},1500)
+    }
+    function reset(){flipped=[];matched=[];used=[];scores=[0,0];player=0;moves=0;locked=false;message.textContent="Choose two cards. Good luck!";render()}
+    document.querySelector("#restart").addEventListener("click",reset);render();
+  </script>
+</body>
+</html>
